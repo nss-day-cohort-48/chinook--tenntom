@@ -33,4 +33,48 @@ WHERE Employee.Title LIKE "%Sales%";
 SELECT DISTINCT BillingCountry
 FROM Invoice
 
-#6
+#6 Sales Agent Invoices
+
+SELECT Employee.FirstName|| ' ' ||Employee.LastName as Fullname,
+Title,
+InvoiceId
+FROM Invoice
+JOIN Customer
+ON Invoice.CustomerId = Customer.CustomerId
+JOIN Employee
+ON Employee.EmployeeId = Customer.SupportRepId
+WHERE Employee.Title LIKE "%Sales%";
+
+#7 Invoice Totals
+
+SELECT Customer.FirstName|| ' ' ||Customer.LastName as Fullname,
+Customer.Country,
+EmployeeId,
+InvoiceId,
+Invoice.Total,
+Employee.FirstName|| ' ' ||Employee.LastName as Repname
+FROM Invoice
+JOIN Customer
+ON Invoice.CustomerId = Customer.CustomerId
+JOIN Employee
+ON Employee.EmployeeId = Customer.SupportRepId
+
+#8 Count 
+
+SELECT COUNT(DISTINCT InvoiceDate)
+From Invoice
+WHERE InvoiceDate LIKE "%2009%"
+OR InvoiceDate LIKE "%2011%"
+
+#9 Total Sales
+
+SELECT SUM(Total)
+From Invoice
+WHERE InvoiceDate LIKE "%2009%"
+OR InvoiceDate LIKE "%2011%"
+
+#10 Line Item
+
+SELECT COUNT(InvoiceLineId)
+FROM InvoiceLine
+WHERE InvoiceLine.InvoiceId = 37
