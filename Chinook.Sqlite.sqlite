@@ -1,0 +1,36 @@
+#1. Not USA
+
+SELECT FirstName, LastName, CustomerId, Country
+FROM Customer
+WHERE Country != "USA"
+
+#2 Brazil
+
+SELECT FirstName, LastName, CustomerId, Country
+FROM Customer
+WHERE Country = "Brazil"
+
+#3 with invoice
+
+SELECT FirstName|| '' ||LastName as Fullname, 
+InvoiceId,
+InvoiceDate,
+BillingCountry
+FROM Customer
+JOIN Invoice
+    ON Customer.CustomerId = Invoice.CustomerId
+WHERE BillingCountry = "Brazil"
+
+#4 Sales Agents
+
+SELECT FirstName|| '' ||LastName as Fullname,
+Title
+FROM Employee
+WHERE Employee.Title LIKE "%Sales%";
+
+#5 Distinct Countries
+
+SELECT DISTINCT BillingCountry
+FROM Invoice
+
+#6

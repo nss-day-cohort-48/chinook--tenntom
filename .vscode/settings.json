@@ -4,7 +4,7 @@
             "previewLimit": 50,
             "driver": "SQLite",
             "name": "Chinook",
-            "database": "Chinook.Sqlite.sqlite"
+            "database": "Chinook_Sqlite.sqlite"
         }
     ]
 }
