@@ -12,7 +12,8 @@ WHERE Country = "Brazil"
 
 #3 with invoice
 
-SELECT FirstName|| '' ||LastName as Fullname, 
+SELECT 
+FirstName|| '' ||LastName as Fullname, 
 InvoiceId,
 InvoiceDate,
 BillingCountry
@@ -78,3 +79,39 @@ OR InvoiceDate LIKE "%2011%"
 SELECT COUNT(InvoiceLineId)
 FROM InvoiceLine
 WHERE InvoiceLine.InvoiceId = 37
+
+#11 Line Items per Invoice
+
+Select InvoiceId, COUNT(InvoiceLineId)
+FROM InvoiceLine
+GROUP BY InvoiceLine.InvoiceId
+
+#12 Line Item with track Name
+
+Select InvoiceLineId, InvoiceLine.TrackId, Track.Name
+FROM InvoiceLine
+JOIN Track
+ON InvoiceLine.TrackId = Track.TrackId
+
+# 13 Line Item with Name and Artist
+
+Select il.InvoiceLineId, il.TrackId, t.TrackId, t.Composer, t.Name, a.ArtistId, a.Name
+FROM InvoiceLine il
+JOIN Track t
+ON il.TrackId = t.TrackId
+JOIN Artist a 
+ON t.Composer = a.Name
+
+#14 Invoices by Country
+
+Select COUNT(InvoiceId), BillingCountry
+FROM Invoice
+GROUP BY BillingCountry
+
+#15 Tracks per Playlist
+
+SELECT COUNT(PlayListTrack.TrackId), PlayList.Name
+FROM PlayListTrack
+JOIN PlayList
+ON Playlist.PlaylistId = PlaylistTrack.PlayListId
+GROUP by PlayList.PlayListId
