@@ -62,10 +62,11 @@ ON Employee.EmployeeId = Customer.SupportRepId
 
 #8 Count 
 
-SELECT COUNT(DISTINCT InvoiceDate)
-From Invoice
-WHERE InvoiceDate LIKE "%2009%"
-OR InvoiceDate LIKE "%2011%"
+SELECT COUNT(InvoiceId) as TotalInvoices2009And2011
+FROM Invoice
+WHERE InvoiceDate BETWEEN '2011-01-01' AND '2011-12-31'
+OR 
+InvoiceDate BETWEEN '2009-01-01' AND '2009-12-31'
 
 #9 Total Sales
 
@@ -73,6 +74,15 @@ SELECT SUM(Total)
 From Invoice
 WHERE InvoiceDate LIKE "%2009%"
 OR InvoiceDate LIKE "%2011%"
+
+OR
+
+SELECT ROUND(SUM(Total),2)
+FROM Invoice
+WHERE InvoiceDate BETWEEN '2011-01-01' AND '2011-12-31'
+OR 
+InvoiceDate BETWEEN '2009-01-01' AND '2009-12-31'
+
 
 #10 Line Item
 
