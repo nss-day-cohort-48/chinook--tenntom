@@ -92,7 +92,7 @@ WHERE InvoiceLine.InvoiceId = 37
 
 #11 Line Items per Invoice
 
-Select InvoiceId, COUNT(InvoiceLineId)
+Select InvoiceId as "invoice number", COUNT(InvoiceLineId) as lines
 FROM InvoiceLine
 GROUP BY InvoiceLine.InvoiceId
 
@@ -125,3 +125,66 @@ FROM PlayListTrack
 JOIN PlayList
 ON Playlist.PlaylistId = PlaylistTrack.PlayListId
 GROUP by PlayList.PlayListId
+
+#16 Tracks with no InvoiceDate
+
+SELECT t.name as track, a.title as album, mt.name as media_type, g.name as genre
+FROM Track t
+JOIN MediaType mt
+ON t.mediaTypeId = mt.mediaTypeId 
+JOIN Genre g
+ON t.genreId = g.genreId
+JOIN Album a
+ON t.albumId = a.albumId
+
+#17 Invoices Line Item Count (same as 11?)
+
+Select COUNT(InvoiceLineId), InvoiceId as invoice_number
+FROM InvoiceLine
+GROUP BY invoice_number
+
+#18 sales agent total
+
+SELECT ROUND(SUM(i.Total),2), e.FirstName|| ' ' || e.LastName as Fullname
+From Invoice i
+JOIN Customer c 
+ON i.customerId = c.CustomerId
+JOIN Employee e
+ON c.SupportRepId = e.EmployeeId
+GROUP BY EmployeeId
+
+to Check:
+SELECT ROUND(SUM(Total),2)
+From Invoice
+
+#19 TOP in 2009
+
+SELECT
+MAX(sales_2009.rep_sales_2009) as top_rep_2009,
+sales_2009.fullname
+FROM (SELECT 
+    (ROUND(SUM(i.Total),2)) as rep_sales_2009,
+    e.FirstName|| ' ' || e.LastName as Fullname
+    From Invoice i
+    JOIN Customer c 
+    ON i.customerId = c.CustomerId
+    JOIN Employee e
+    ON c.SupportRepId = e.EmployeeId
+    WHERE i.InvoiceDate BETWEEN '2009-01-01' AND '2009-12-31'
+    GROUP BY e.employeeId
+    ) AS sales_2009
+
+#20 
+
+SELECT
+MAX (allsales.rep_sales) as top_rep,
+allsales.fullname
+FROM(
+    SELECT ROUND(SUM(i.Total),2) as rep_sales, e.FirstName|| ' ' || e.LastName as Fullname
+    From Invoice i
+    JOIN Customer c 
+    ON i.customerId = c.CustomerId
+    JOIN Employee e
+    ON c.SupportRepId = e.EmployeeId
+    GROUP BY EmployeeId
+) as allsales
