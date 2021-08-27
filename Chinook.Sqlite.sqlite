@@ -105,7 +105,7 @@ ON InvoiceLine.TrackId = Track.TrackId
 
 # 13 Line Item with Name and Artist
 
-Select il.InvoiceLineId, il.TrackId, t.TrackId, t.Composer, t.Name, a.ArtistId, a.Name
+Select il.InvoiceLineId, il.TrackId, t.TrackId, t.Composer, t.Name as Track, a.ArtistId, a.Name
 FROM InvoiceLine il
 JOIN Track t
 ON il.TrackId = t.TrackId
@@ -174,7 +174,7 @@ FROM (SELECT
     GROUP BY e.employeeId
     ) AS sales_2009
 
-#20 
+#20 Top Agent
 
 SELECT
 MAX (allsales.rep_sales) as top_rep,
@@ -188,3 +188,138 @@ FROM(
     ON c.SupportRepId = e.EmployeeId
     GROUP BY EmployeeId
 ) as allsales
+
+SELECT
+MAX (rep_sales) as top_rep,
+fullname
+FROM(
+    SELECT ROUND(SUM(i.Total),2) as rep_sales, 
+    e.FirstName|| ' ' || e.LastName as Fullname
+    From Invoice i
+    JOIN Customer c 
+    ON i.customerId = c.CustomerId
+    JOIN Employee e
+    ON c.SupportRepId = e.EmployeeId
+    GROUP BY EmployeeId
+)
+
+#21 Sales Agent Customer Count
+
+Select 
+e.FirstName|| ' ' || e.LastName as Employee,
+COUNT(c.SupportRepId) as "Customer Count"
+FROM Employee e
+JOIN Customer c
+ON c.SupportRepId = e.EmployeeId
+GROUP by SupportRepId
+
+
+#22 Sales per Country
+
+Select ROUND(SUM(Total), 2), BillingCountry
+FROM Invoice
+GROUP BY BillingCountry
+
+
+#23 Top Country by Sales
+
+SELECT
+BillingCountry,
+MAX(TotalSales)
+FROM (
+    Select ROUND(SUM(Total), 2) as TotalSales, BillingCountry
+    FROM Invoice
+    GROUP BY BillingCountry)
+
+
+#24 Top Track in 2013
+ -- Seems like all tracks only sold once
+
+SELECT
+name,
+MAX(TrackTotal)
+FROM(
+    SELECT 
+    il.trackId,
+    t.name,
+    COUNT(il.TrackId) as TrackTotal
+    FROM InvoiceLine il
+    JOIN Invoice i
+    ON il.invoiceId = i.invoiceId
+    JOIN Track t
+    ON il.trackId = t.trackId
+    WHERE i.InvoiceDate BETWEEN '2013-01-01' AND '2013-12-31'
+    GROUP BY il.TrackId)
+
+
+#25 Top 5 Tracks Overall
+ -- Seems like the most popular still only sold twice
+
+SELECT
+name,
+MAX(TrackTotal),
+TrackId
+FROM(
+    SELECT 
+    il.trackId as TrackId,
+    t.name,
+    SUM(il.quantity) as TrackTotal
+    FROM InvoiceLine il
+    JOIN Invoice i
+    ON il.invoiceId = i.invoiceId
+    JOIN Track t
+    ON il.trackId = t.trackId
+    GROUP BY il.TrackId)
+
+
+SELECT 
+TrackId
+FROM InvoiceLine
+WHERE COUNT(trackId) = 2
+
+SELECT
+name,
+TrackTotal,
+TrackId
+FROM(
+    SELECT 
+    il.trackId as TrackId,
+    t.name,
+    COUNT(il.TrackId) as TrackTotal
+    FROM InvoiceLine il
+    JOIN Invoice i
+    ON il.invoiceId = i.invoiceId
+    JOIN Track t
+    ON il.trackId = t.trackId
+    GROUP BY il.TrackId)
+WHERE TrackTotal > 1
+
+# 26 Top 3 Artists
+
+SELECT Artist,
+Total_Track_Sales
+FROM(
+    SELECT
+    a.name as Artist,
+    COUNT(il.quantity) as Total_Track_Sales
+    FROM Artist a
+    JOIN Track t
+    ON a.name = t.Composer
+    JOIN InvoiceLine il
+    ON t.TrackId = il.TrackId
+    GROUP BY a.ArtistId
+)
+ORDER BY Total_Track_Sales DESC
+
+# 27 Most Purchased Media Type
+
+SELECT
+mt.name as Media,
+SUM(il.quantity) as Total_Media_Use
+FROM MediaType mt
+JOIN Track t
+ON mt.MediaTypeId = t.MediaTypeId
+JOIN InvoiceLine il
+ON t.TrackId = il.TrackId
+GROUP BY mt.MediaTypeId
+
